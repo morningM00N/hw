@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <style>
+        img {
+            width: 50px;
+            height: 50px;
+            border: 0px;
+        }
+        
+        .textNumber {
+            position: absolute;
+            height: 5vh;
+            font-size: 3vh;
+            width: 30vw;
+        }
+        
+        .textBase {
+            position: absolute;
+            height: 5vh;
+            font-size: 3vh;
+            width: 10vw;
+        }
+        
+        .sltOperator {
+            position: absolute;
+            height: 5vh;
+            font-size: 3vh;
+            text-align: center;
+            width: 4vw;
+        }
+        
+        .sltNumber {
+            position: absolute;
+            height: 5vh;
+            font-size: 3vh;
+            text-align: center;
+            width: 10vw;
+            text-align: center;
+        }
+        
+        .btnCal {
+            position: absolute;
+            padding: 0px;
+            margin: 0px;
+            height: 5vh;
+            font-size: 3vh;
+            width: 92vw;
+        }
+    </style>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <!--모바일페이지크기조절메타태그-->
+    <title>숙제</title>
+</head>
+
+<body id="body" style="margin:0px; padding:0px">
+    <div id="main" style="margin:0px; padding: 3vh 2vw 3vh 2vw; height:15vh;">
+        <input class="textNumber" style="left:3vw; top:5vh" type="text" id="inputFirstNumber"></input>
+        <select class="sltOperator" style="left:35vw; top:5vh" id="sltOperator">
+            <option>x</option>
+            <option>/</option>
+        </select>
+        <input class="textNumber" style="left:41vw; top:5vh" type="text" id="inputSecondNumber"></input>
+        <select class="sltNumber" style="left:73vw; top:5vh" id="sltNumberType">
+            <option>2진수</option>
+            <option>8진수</option>
+            <option>10진수</option>
+            <option>16진수</option>
+        </select>
+        <select class="sltNumber" style="left:85vw; top:5vh" id="sltPrinterType">
+            <option class="opt">일반</option>
+            <option>넓게</option>
+            <option>이미지</option>
+        </select>
+        <button class="btnCal" style="left:3vw; top:12vh" onclick="funcCal()">계산</button>
+    </div>
+    <div id="bottom" style="padding:50px; height:75vh"> </div>
+</body>
+<script>
+    function funcCal() {
+        let first, second, printer, engine
+        let firstValue = document.getElementById("inputFirstNumber").value
+        let secondValue = document.getElementById("inputSecondNumber").value
+        let numberType = document.getElementById("sltNumberType").selectedIndex
+        let printerType = document.getElementById("sltPrinterType").selectedIndex
+        let operatorType = document.getElementById("sltOperator").selectedIndex
+        switch (numberType) {
+            case 0:
+                first = new Radix(firstValue || "10010010", 2)
+                second = new Radix(secondValue || "1101", 2)
+                break;
+            case 1:
+                first = new Radix(firstValue || "51245", 8)
+                second = new Radix(secondValue || "417", 8)
+                break;
+            case 2:
+                first = new Radix(firstValue || "814745", 10)
+                second = new Radix(secondValue || "927", 10)
+                break;
+            case 3:
+                first = new Radix(firstValue || "817a5", 16)
+                second = new Radix(secondValue || "9d7", 16)
+                break;
+            default:
+                break;
+        }
+        switch (printerType) {
+            case 0:
+                printer = new EQPrinterUsingPre()
+                break;
+            case 1:
+                printer = new EQPrinterWide()
+                break;
+            case 2:
+                printer = new EQPrinterUsingImg()
+                break;
+            default:
+                break;
+        }
+        switch (operatorType) {
+            case 0:
+                engine = new Multiplier(first, second, printer)
+                break;
+            case 1:
+                engine = new Divider(first, second, printer)
+                break;
+            default:
+                break;
+
+        }
+        engine.calculate()
+
+    }
+    class Numbers {
+        toString() {
+            alert("no instance is allowed in Numbers")
+        }
+        getLength() {
+            alert("no instance is allowed in Numbers")
+        }
+        add(otherNum) {
+            alert("no instance is allowed in Numbers")
+        }
+        subtract(otherNum) {
+            alert("no instance is allowed in Numbers")
+        }
+        multiply(otherNum) {
+            alert("no instance is allowed in Numbers")
+        }
+        divide(otherNum) {
+            alert("no instance is allowed in Numbers")
+        }
+
+        // getElement(loc) {
+        //     alert("no instance is allowed in Numbers")
+        // }
+
+        getElements(start, end) {
+            alert("no instance is allowed in Numbers")
+        }
+        moveLeft(leftTo) {
+            alert("no instance is allowed in Numbers")
+        }
+    }
+
+    class EQPrinter {
+        constructor() {
+            this.maxLength = 0
+        }
+        setMaxLength(val) {
+            if (val > this.maxLength) {
+                this.maxLength = val
+            }
+        }
+        printLine(contents, leftTo, prefix) {
+            alert("no instance is allowed in EQPrinter")
+        }
+
+        // printBar(start, end) {
+        //     alert("no instance is allowed in EQPrinter")
+        // }
+
+        printBar(numOfBars) {
+            let ret = ""
+            numOfBars = numOfBars || this.maxLength
+            for (let idx = 0; idx < numOfBars; idx++) {
+                ret += "-"
+            }
+            this.printLine(ret)
+        }
+    }
+
+    class Engine {
+        constructor(_first, _second, _printer) {
+            this.firstNumber = _first
+            this.secondNumber = _second
+            this.printer = _printer
+        }
+        calculate() {
+            alert("no instance is allowed in Engine")
+        }
+    }
+
+
+    class Radix extends Numbers {
+        constructor(nu, base) {
+            super();
+            this.value = 0
+            this.base = base || 10
+            if (Number.isInteger(nu) == true) {
+                this.value = nu
+                return
+            } else {
+                for (let idx = 0; idx < nu.length; idx++) {
+                    this.value *= this.base;
+                    let ch = Number(nu.charAt(idx))
+                    if (isNaN(ch) == false) {
+                        this.value += Number(nu.charAt(idx))
+                    } else {
+                        this.value += (nu.charCodeAt(idx) - 97 + 10) // 97 is the ASCII code of 'a'
+                    }
+                }
+            }
+        }
+        toString() {
+            if (this.value == 0) {
+                return "0"
+            }
+            let ret = ""
+            let tempValue = this.value
+            while (tempValue != 0) {
+                let iterVal = tempValue % this.base
+                if (iterVal < 10) {
+                    ret += iterVal
+                } else {
+                    ret += String.fromCharCode(iterVal - 10 + 97) // 97 is the ASCII code of 'a'
+                }
+                tempValue = Math.floor(tempValue /= this.base)
+            }
+            let ret2 = ""
+            for (let idx = ret.length - 1; idx >= 0; idx--) {
+                ret2 += ret.charAt(idx)
+            }
+            return ret2;
+        }
+
+        getLength() {
+            return this.toString().length
+        }
+
+        add(otherNum) {
+            return new Radix(this.value + otherNum.value, this.base)
+        }
+
+        subtract(otherNum) {
+            return new Radix(this.value - otherNum.value, this.base)
+        }
+
+        multiply(otherNum) {
+            return new Radix(this.value * otherNum.value, this.base)
+        }
+
+        divide(otherNum) {
+            return new Radix(Math.floor(this.value / otherNum.value), this.base)
+        }
+
+        // getElement(loc) {
+        //     //return new Radix(Math.floor(this.value / Math.pow(this.base, loc)) % this.base, this.base)
+        //     return this.getElements(loc, loc)
+        // }
+        getElements(start, end) {
+            if (start < 0) {
+                start = 0
+            }
+            if (end == null) {
+                end = this.getLength()
+            }
+
+            return new Radix(Math.floor(this.value / Math.pow(this.base, start)) % Math.pow(this.base, end - start + 1), this.base)
+        }
+        moveLeft(leftTo) {
+            return new Radix(this.value * Math.pow(this.base, leftTo), this.base)
+        }
+    }
+
+
+
+    class Multiplier extends Engine {
+        constructor(_first, _second, _printer) {
+            super(_first, _second, _printer)
+            this.printer.setMaxLength(this.firstNumber.toString().length)
+            this.printer.setMaxLength(this.secondNumber.toString().length + 2)
+        }
+        calculate() {
+            this.printer.clear()
+
+            let result = this.firstNumber.multiply(this.secondNumber)
+            this.printer.setMaxLength(result.toString().length + 1)
+            this.printer.printLine(this.firstNumber.toString())
+            this.printer.printLine(this.secondNumber.toString(), 0, "x")
+            this.printer.printBar()
+            for (let idx = 0; idx < this.secondNumber.toString().length; idx++) {
+                let tempResult = this.firstNumber.multiply(this.secondNumber.getElements(idx, idx))
+                this.printer.printLine(tempResult.toString(), idx)
+            }
+            this.printer.printBar()
+            this.printer.printLine(result.toString())
+        }
+    }
+
+    class Divider extends Engine {
+        constructor(_first, _second, _printer) {
+            super(_first, _second, _printer)
+            this.printer.setMaxLength(this.firstNumber.toString().length + this.secondNumber.toString().length + 1)
+        }
+        calculate() {
+            this.printer.clear()
+            let result = this.firstNumber.divide(this.secondNumber)
+            this.printer.printLine(result.toString())
+            this.printer.printBar(this.firstNumber.getLength())
+            this.printer.printLine(this.firstNumber.toString(), 0, this.secondNumber.toString() + ")")
+
+            let barLength = this.firstNumber.getLength()
+
+            for (let idx = result.getLength() - 1; idx >= 0; idx--) {
+                let tempResult = this.secondNumber.multiply(result.getElements(idx, idx))
+                this.firstNumber = this.firstNumber.subtract(tempResult.moveLeft(idx))
+                this.printer.printLine(tempResult.toString(), idx)
+                this.printer.printBar(barLength)
+                this.printer.printLine(this.firstNumber.getElements(idx - 1).toString(), idx - 1)
+
+            }
+        }
+    }
+
+
+    class EQPrinterUsingPre extends EQPrinter {
+        getSpaces(numOfSpaces) {
+            let str = ""
+            for (let idx = 0; idx < numOfSpaces; idx++) {
+                str += " "
+            }
+            return str
+        }
+        clear() {
+            let pallete = document.getElementById("bottom")
+            while (pallete.childNodes.length > 0) {
+                pallete.removeChild(pallete.childNodes[0])
+            }
+        }
+        printLine(contents, leftTo, prefix) {
+            leftTo = leftTo || 0
+            if (leftTo < 0) {
+                leftTo = 0
+            }
+            prefix = prefix || ""
+            let ret = prefix
+            ret += this.getSpaces(this.maxLength - contents.length - leftTo - prefix.length)
+            ret += contents
+            let preObj = document.createElement("pre")
+            preObj.style.fontSize = "3vh"
+            preObj.innerHTML = ret
+            document.getElementById("bottom").appendChild(preObj)
+        }
+    }
+
+    class EQPrinterWide extends EQPrinter {
+        setMaxLength(val) {
+            if (2 * val > this.maxLength) {
+                this.maxLength = 2 * val
+            }
+        }
+        getSpaces(numOfSpaces) {
+            let str = ""
+            for (let idx = 0; idx < numOfSpaces; idx++) {
+                str += " "
+            }
+            return str
+        }
+        clear() {
+            let pallete = document.getElementById("bottom")
+            while (pallete.childNodes.length > 0) {
+                pallete.removeChild(pallete.childNodes[0])
+            }
+        }
+        printLine(contents, leftTo, prefix) {
+            leftTo = leftTo || 0
+            prefix = prefix || ""
+            let ret = ""
+            for (let idx = 0; idx < prefix.length; idx++) {
+                ret += " "
+                ret += prefix[idx]
+            }
+            ret += this.getSpaces(this.maxLength - 2 * contents.length - 2 * leftTo - 2 * prefix.length)
+            for (let idx = 0; idx < contents.length; idx++) {
+                ret += " "
+                ret += contents[idx]
+            }
+            //ret+=contents
+            let preObj = document.createElement("pre")
+            preObj.style.fontSize = "3vh"
+            preObj.innerHTML = ret
+            document.getElementById("bottom").appendChild(preObj)
+        }
+        printBar(numOfBars) {
+            let ret = ""
+            numOfBars = numOfBars || (this.maxLength / 2)
+            for (let idx = 0; idx < numOfBars; idx++) {
+                ret += "-"
+            }
+            this.printLine(ret)
+        }
+
+    }
+
+
+
+    class EQPrinterUsingImg extends EQPrinter {
+        constructor() {
+            super()
+            this.imgSrc = new Array()
+            this.imgSrc['0'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Z%C3%A9ro.svg/1024px-Z%C3%A9ro.svg.png"
+            this.imgSrc['1'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/%E4%B8%80-order.gif/120px-%E4%B8%80-order.gif"
+            this.imgSrc['2'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/%E4%BA%8C-order.gif/120px-%E4%BA%8C-order.gif"
+            this.imgSrc['3'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/%E4%B8%89-order.gif/120px-%E4%B8%89-order.gif"
+            this.imgSrc['4'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/%E5%9B%9B-order.gif/120px-%E5%9B%9B-order.gif"
+            this.imgSrc['5'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/%E4%BA%94-order.gif/120px-%E4%BA%94-order.gif"
+            this.imgSrc['6'] = "https://upload.wikimedia.org/wikipedia/commons/b/b0/%E5%85%AD-order.gif"
+            this.imgSrc['7'] = "https://upload.wikimedia.org/wikipedia/commons/5/59/%E4%B8%83-order.gif"
+            this.imgSrc['8'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/%E5%85%AB-order.gif/100px-%E5%85%AB-order.gif"
+            this.imgSrc['9'] = "https://upload.wikimedia.org/wikipedia/commons/e/ee/%E4%B9%9D-order.gif"
+            this.imgSrc['-'] = "https://image.flaticon.com/icons/png/512/19/19954.png"
+            this.imgSrc['x'] = "https://image.flaticon.com/icons/svg/75/75519.svg"
+            this.imgSrc[')'] = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvlzBaomFR5cq5udNP4Su-vSruGFfky06iYX8wpc8IBI4tIkzt&s"
+            this.imgSrc['a'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/RomanA-01.svg/60px-RomanA-01.svg.png"
+            this.imgSrc['b'] = "https://upload.wikimedia.org/wikipedia/commons/3/30/RomanB-01.png"
+            this.imgSrc['c'] = "https://upload.wikimedia.org/wikipedia/commons/1/19/RomanC-01.png"
+            this.imgSrc['d'] = "https://upload.wikimedia.org/wikipedia/commons/b/ba/RomanD-01.png"
+            this.imgSrc['e'] = "https://upload.wikimedia.org/wikipedia/commons/6/60/RomanE-01.png"
+            this.imgSrc['f'] = "https://upload.wikimedia.org/wikipedia/commons/c/c2/RomanF-01.png"
+
+        }
+
+        clear() {
+            let pallete = document.getElementById("bottom")
+            while (pallete.childNodes.length > 0) {
+                pallete.removeChild(pallete.childNodes[0])
+            }
+        }
+        printLine(contents, leftTo, prefix) {
+            leftTo = leftTo || 0
+            if (leftTo < 0) {
+                leftTo = 0
+            }
+            prefix = prefix || ""
+            for (let idx = 0; idx < prefix.length; idx++) {
+                let imgNu = document.createElement("img")
+                imgNu.src = this.imgSrc[prefix[idx]]
+                document.getElementById("bottom").appendChild(imgNu)
+            }
+            let ret = prefix
+            for (let idx = 0; idx < this.maxLength - contents.length - leftTo - prefix.length; idx++) {
+                let imgNu = document.createElement("img")
+
+                document.getElementById("bottom").appendChild(imgNu)
+                imgNu.style.visibility = "hidden"
+
+            }
+            for (let idx = 0; idx < contents.length; idx++) {
+                let imgNu = document.createElement("img")
+                imgNu.src = this.imgSrc[contents[idx]]
+                document.getElementById("bottom").appendChild(imgNu)
+            }
+            document.getElementById("bottom").appendChild(document.createElement("br"))
+        }
+    }
+</script>
