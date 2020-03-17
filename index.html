@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
 
 <head>
     <style>
         img {
-            width: 50px;
-            height: 50px;
+            width: 30px;
+            height: 30px;
             border: 0px;
         }
         
@@ -56,13 +55,14 @@
 
 <body id="body" style="margin:0px; padding:0px">
     <div id="main" style="margin:0px; padding: 3vh 2vw 3vh 2vw; height:15vh;">
-        <input class="textNumber" style="left:3vw; top:5vh" type="text" id="inputFirstNumber"></input>
+        <input class="textNumber" style="left:3vw; top:5vh" type="text" id="inputFirstNumber" value="1 -2 3 4"></input>
         <select class="sltOperator" style="left:35vw; top:5vh" id="sltOperator">
             <option>x</option>
             <option>/</option>
         </select>
-        <input class="textNumber" style="left:41vw; top:5vh" type="text" id="inputSecondNumber"></input>
-        <select class="sltNumber" style="left:73vw; top:5vh" id="sltNumberType">
+        <input class="textNumber" style="left:41vw; top:5vh" type="text" id="inputSecondNumber" value="1 2"></input>
+        <select class="sltNumber" style="left:73vw; top:5vh" id="sltNumberType" onchange="funcChange();">
+            <option>수식</option>
             <option>2진수</option>
             <option>8진수</option>
             <option>10진수</option>
@@ -73,406 +73,981 @@
             <option>넓게</option>
             <option>이미지</option>
         </select>
-        <button class="btnCal" style="left:3vw; top:12vh" onclick="funcCal()">계산</button>
+        <button id="btnCal" class="btnCal" style="left:3vw; top:12vh">계산</button>
     </div>
     <div id="bottom" style="padding:50px; height:75vh"> </div>
 </body>
 <script>
-    function funcCal() {
-        let first, second, printer, engine
-        let firstValue = document.getElementById("inputFirstNumber").value
-        let secondValue = document.getElementById("inputSecondNumber").value
-        let numberType = document.getElementById("sltNumberType").selectedIndex
-        let printerType = document.getElementById("sltPrinterType").selectedIndex
-        let operatorType = document.getElementById("sltOperator").selectedIndex
+    "use strict";
+
+    Number.isInteger = Number.isInteger || function(value) {
+        return typeof value === "number" &&
+            isFinite(value) &&
+            Math.floor(value) === value;
+    };
+
+
+    function _typeof(obj) {
+        "@babel/helpers - typeof";
+        if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+            _typeof = function _typeof(obj) {
+                return typeof obj;
+            };
+        } else {
+            _typeof = function _typeof(obj) {
+                return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+            };
+        }
+        return _typeof(obj);
+    }
+
+    function _possibleConstructorReturn(self, call) {
+        if (call && (_typeof(call) === "object" || typeof call === "function")) {
+            return call;
+        }
+        return _assertThisInitialized(self);
+    }
+
+    function _assertThisInitialized(self) {
+        if (self === void 0) {
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }
+        return self;
+    }
+
+    function _getPrototypeOf(o) {
+        _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+            return o.__proto__ || Object.getPrototypeOf(o);
+        };
+        return _getPrototypeOf(o);
+    }
+
+    function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+            throw new TypeError("Super expression must either be null or a function");
+        }
+        subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+                value: subClass,
+                writable: true,
+                configurable: true
+            }
+        });
+        if (superClass) _setPrototypeOf(subClass, superClass);
+    }
+
+    function _setPrototypeOf(o, p) {
+        _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+            o.__proto__ = p;
+            return o;
+        };
+        return _setPrototypeOf(o, p);
+    }
+
+    function _instanceof(left, right) {
+        if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+            return !!right[Symbol.hasInstance](left);
+        } else {
+            return left instanceof right;
+        }
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!_instanceof(instance, Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+            var descriptor = props[i];
+            descriptor.enumerable = descriptor.enumerable || false;
+            descriptor.configurable = true;
+            if ("value" in descriptor) descriptor.writable = true;
+            Object.defineProperty(target, descriptor.key, descriptor);
+        }
+    }
+
+    function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        return Constructor;
+    }
+
+    function funcChange() {
+        var txtFirst = document.getElementById("inputFirstNumber");
+        var txtSecond = document.getElementById("inputSecondNumber");
+        var numberType = document.getElementById("sltNumberType").selectedIndex;
+
         switch (numberType) {
-            case 0:
-                first = new Radix(firstValue || "10010010", 2)
-                second = new Radix(secondValue || "1101", 2)
-                break;
             case 1:
-                first = new Radix(firstValue || "51245", 8)
-                second = new Radix(secondValue || "417", 8)
+                txtFirst.value = "10010010";
+                txtSecond.value = "1101";
                 break;
+
             case 2:
-                first = new Radix(firstValue || "814745", 10)
-                second = new Radix(secondValue || "927", 10)
+                txtFirst.value = "51245";
+                txtSecond.value = "417";
                 break;
+
             case 3:
-                first = new Radix(firstValue || "817a5", 16)
-                second = new Radix(secondValue || "9d7", 16)
+                txtFirst.value = "814745";
+                txtSecond.value = "927";
                 break;
+
+            case 4:
+                txtFirst.value = "817a5";
+                txtSecond.value = "9d7";
+                break;
+
+            case 0:
+                txtFirst.value = "1 -2 3 4";
+                txtSecond.value = "1 2";
+                break;
+
             default:
                 break;
         }
+    }
+
+    function funcCal() {
+        var first, second, printer, engine;
+        var firstValue = document.getElementById("inputFirstNumber").value;
+        var secondValue = document.getElementById("inputSecondNumber").value;
+        var numberType = document.getElementById("sltNumberType").selectedIndex;
+        var printerType = document.getElementById("sltPrinterType").selectedIndex;
+        var operatorType = document.getElementById("sltOperator").selectedIndex; //numberType = 4
+
+        switch (numberType) {
+            case 1:
+                first = new Radix(firstValue || "10010010", 2);
+                second = new Radix(secondValue || "1101", 2);
+                break;
+
+            case 2:
+                first = new Radix(firstValue || "51245", 8);
+                second = new Radix(secondValue || "417", 8);
+                break;
+
+            case 3:
+                first = new Radix(firstValue || "814745", 10);
+                second = new Radix(secondValue || "927", 10);
+                break;
+
+            case 4:
+                first = new Radix(firstValue || "817a5", 16);
+                second = new Radix(secondValue || "9d7", 16);
+                break;
+
+            case 0:
+                first = new LinearEq(firstValue || "1 -2 3 4");
+                second = new LinearEq(secondValue || "1 2");
+                break;
+
+            default:
+                break;
+        }
+
         switch (printerType) {
             case 0:
-                printer = new EQPrinterUsingPre()
+                printer = new EQPrinterUsingPre();
                 break;
+
             case 1:
-                printer = new EQPrinterWide()
+                printer = new EQPrinterWide();
                 break;
+
             case 2:
-                printer = new EQPrinterUsingImg()
+                printer = new EQPrinterUsingImg();
                 break;
+
             default:
                 break;
         }
+
         switch (operatorType) {
             case 0:
-                engine = new Multiplier(first, second, printer)
+                engine = new Multiplier(first, second, printer);
                 break;
+
             case 1:
-                engine = new Divider(first, second, printer)
+                engine = new Divider(first, second, printer);
                 break;
+
             default:
                 break;
-
-        }
-        engine.calculate()
-
-    }
-    class Numbers {
-        toString() {
-            alert("no instance is allowed in Numbers")
-        }
-        getLength() {
-            alert("no instance is allowed in Numbers")
-        }
-        add(otherNum) {
-            alert("no instance is allowed in Numbers")
-        }
-        subtract(otherNum) {
-            alert("no instance is allowed in Numbers")
-        }
-        multiply(otherNum) {
-            alert("no instance is allowed in Numbers")
-        }
-        divide(otherNum) {
-            alert("no instance is allowed in Numbers")
         }
 
-        // getElement(loc) {
-        //     alert("no instance is allowed in Numbers")
-        // }
-
-        getElements(start, end) {
-            alert("no instance is allowed in Numbers")
-        }
-        moveLeft(leftTo) {
-            alert("no instance is allowed in Numbers")
-        }
+        engine.calculate();
     }
 
-    class EQPrinter {
-        constructor() {
-            this.maxLength = 0
+    document.getElementById("btnCal").onclick = function() {
+        funcCal();
+    };
+
+    var Numbers = /*#__PURE__*/ function() {
+        function Numbers() {
+            _classCallCheck(this, Numbers);
+
+            this.moveTic = 1;
         }
-        setMaxLength(val) {
-            if (val > this.maxLength) {
-                this.maxLength = val
+
+        _createClass(Numbers, [{
+            key: "toString",
+            value: function toString() {
+                alert("no instance is allowed in Numbers");
             }
-        }
-        printLine(contents, leftTo, prefix) {
-            alert("no instance is allowed in EQPrinter")
-        }
-
-        // printBar(start, end) {
-        //     alert("no instance is allowed in EQPrinter")
-        // }
-
-        printBar(numOfBars) {
-            let ret = ""
-            numOfBars = numOfBars || this.maxLength
-            for (let idx = 0; idx < numOfBars; idx++) {
-                ret += "-"
+        }, {
+            key: "getLength",
+            value: function getLength() {
+                alert("no instance is allowed in Numbers");
             }
-            this.printLine(ret)
-        }
-    }
+        }, {
+            key: "add",
+            value: function add(otherNum) {
+                alert("no instance is allowed in Numbers");
+            }
+        }, {
+            key: "subtract",
+            value: function subtract(otherNum) {
+                alert("no instance is allowed in Numbers");
+            }
+        }, {
+            key: "multiply",
+            value: function multiply(otherNum) {
+                alert("no instance is allowed in Numbers");
+            }
+        }, {
+            key: "divide",
+            value: function divide(otherNum) {
+                    alert("no instance is allowed in Numbers");
+                } // getElement(loc) {
+                //     alert("no instance is allowed in Numbers")
+                // }
 
-    class Engine {
-        constructor(_first, _second, _printer) {
-            this.firstNumber = _first
-            this.secondNumber = _second
-            this.printer = _printer
-        }
-        calculate() {
-            alert("no instance is allowed in Engine")
-        }
-    }
+        }, {
+            key: "getElements",
+            value: function getElements(start, end) {
+                alert("no instance is allowed in Numbers");
+            }
+        }, {
+            key: "moveLeft",
+            value: function moveLeft(leftTo) {
+                alert("no instance is allowed in Numbers");
+            }
+        }]);
 
+        return Numbers;
+    }();
 
-    class Radix extends Numbers {
-        constructor(nu, base) {
-            super();
-            this.value = 0
-            this.base = base || 10
+    var EQPrinter = /*#__PURE__*/ function() {
+        function EQPrinter() {
+            _classCallCheck(this, EQPrinter);
+
+            this.maxLength = 0;
+        }
+
+        _createClass(EQPrinter, [{
+            key: "setMaxLength",
+            value: function setMaxLength(val) {
+                if (val > this.maxLength) {
+                    this.maxLength = val;
+                }
+            }
+        }, {
+            key: "printLine",
+            value: function printLine(contents, leftTo, prefix) {
+                    alert("no instance is allowed in EQPrinter");
+                } // printBar(start, end) {
+                //     alert("no instance is allowed in EQPrinter")
+                // }
+
+        }, {
+            key: "printBar",
+            value: function printBar(numOfBars) {
+                var ret = "";
+                numOfBars = numOfBars || this.maxLength;
+
+                for (var idx = 0; idx < numOfBars; idx++) {
+                    ret += "-";
+                }
+
+                this.printLine(ret);
+            }
+        }]);
+
+        return EQPrinter;
+    }();
+
+    var Engine = /*#__PURE__*/ function() {
+        function Engine(_first, _second, _printer) {
+            _classCallCheck(this, Engine);
+
+            this.firstNumber = _first;
+            this.secondNumber = _second;
+            this.printer = _printer;
+        }
+
+        _createClass(Engine, [{
+            key: "calculate",
+            value: function calculate() {
+                alert("no instance is allowed in Engine");
+            }
+        }]);
+
+        return Engine;
+    }();
+
+    var LinearEq = /*#__PURE__*/ function(_Numbers) {
+        _inherits(LinearEq, _Numbers);
+
+        function LinearEq(eq) {
+            var _this;
+
+            _classCallCheck(this, LinearEq);
+
+            _this = _possibleConstructorReturn(this, _getPrototypeOf(LinearEq).call(this));
+            _this.moveTic = 8;
+            _this.shifted = 0;
+            _this.values = new Array();
+
+            if (eq == null) {
+                return _possibleConstructorReturn(_this);
+            }
+
+            var splittedArr = eq.split(" ");
+
+            for (var idx = 0; idx < splittedArr.length; idx++) {
+                _this.values[idx] = Number(splittedArr[splittedArr.length - 1 - idx]);
+            }
+
+            console.log(_this.toString());
+            return _this;
+        }
+
+        _createClass(LinearEq, [{
+            key: "setValues",
+            value: function setValues(valArr) {
+                for (var idx = 0; idx < valArr.length; idx++) {
+                    this.values[idx] = valArr[idx];
+                }
+            }
+        }, {
+            key: "getClause",
+            value: function getClause(coef, order) {
+                if (coef == 0) {
+                    return "";
+                }
+
+                if (order == 0) {
+                    return "" + coef;
+                }
+
+                var ret = "";
+
+                if (order == 1) {
+                    ret = "t";
+                } else {
+                    ret = "t^" + order;
+                }
+
+                if (coef == 1) {
+                    return ret;
+                }
+
+                if (coef == -1) {
+                    return "-" + ret;
+                }
+
+                return coef + ret;
+            }
+        }, {
+            key: "toString",
+            value: function toString() {
+                if (this.values.length == 0) {
+                    return "";
+                }
+
+                var allZero = true;
+
+                for (var idx = 0; idx < this.values.length; idx++) {
+                    if (this.values[idx] != 0) {
+                        allZero = false;
+                        break;
+                    }
+                }
+
+                if (allZero == true) {
+                    return "0";
+                }
+
+                var ret = this.getClause(this.values[0], this.shifted);
+
+                for (var _idx = 1; _idx < this.values.length; _idx++) {
+                    if (this.values[_idx] == 0) {
+                        continue;
+                    }
+
+                    if (ret[0] != '-') {
+                        ret = "+" + ret;
+                    }
+
+                    while (ret.length < 8 * _idx) {
+                        ret = " " + ret;
+                    }
+
+                    ret = this.getClause(this.values[_idx], this.shifted + _idx) + ret;
+                }
+
+                return ret;
+            }
+        }, {
+            key: "getLength",
+            value: function getLength() {
+                return this.values.length;
+            }
+        }, {
+            key: "add",
+            value: function add(otherNum) {
+                var tempVal = new Array();
+
+                for (var idx = 0; idx < Math.max(this.values.length, otherNum.values.length); idx++) {
+                    tempVal[idx] = this.values[idx] || 0 + otherNum.values[idx] || 0;
+                }
+
+                var ret = new LinearEq();
+                ret.setValues(tempVal);
+                return ret;
+            }
+        }, {
+            key: "subtract",
+            value: function subtract(otherNum) {
+                var tempVal = new Array();
+
+                for (var idx = 0; idx < Math.max(this.values.length, otherNum.values.length); idx++) {
+                    tempVal[idx] = (this.values[idx] || 0) - (otherNum.values[idx] || 0);
+                }
+
+                var ret = new LinearEq();
+                ret.setValues(tempVal);
+                return ret;
+            }
+        }, {
+            key: "multiply",
+            value: function multiply(otherNum) {
+                var tempVal = new Array();
+
+                for (var idx = 0; idx < this.values.length + otherNum.values.length - 1; idx++) {
+                    tempVal[idx] = 0;
+                }
+
+                for (var _idx2 = 0; _idx2 < otherNum.values.length; _idx2++) {
+                    for (var idx2 = 0; idx2 < this.values.length; idx2++) {
+                        tempVal[_idx2 + idx2] += (otherNum.values[_idx2] || 0) * this.values[idx2];
+                    }
+                }
+
+                var ret = new LinearEq();
+                ret.setValues(tempVal);
+                return ret;
+            }
+        }, {
+            key: "divide",
+            value: function divide(otherNum) {
+                    var tempVal = new Array();
+                    var ret = new LinearEq();
+
+                    if (this.getLength() < otherNum.getLength()) {
+                        tempVal[0] = 0;
+                        ret.setValues(tempVal);
+                        return ret;
+                    }
+
+                    var tempFirstNumber = new LinearEq();
+                    tempFirstNumber.setValues(this.values);
+
+                    for (var idx = this.getLength() - otherNum.getLength(); idx >= 0; idx--) {
+                        var highestOrder = this.getLength() - 1 - (this.getLength() - otherNum.getLength() - idx);
+                        tempVal[idx] = tempFirstNumber.values[highestOrder] / otherNum.values[otherNum.getLength() - 1];
+                        var tempEQ = new LinearEq("" + tempVal[idx]);
+                        tempEQ = tempEQ.moveLeft(idx);
+                        var tempMulty = otherNum.multiply(tempEQ);
+                        tempFirstNumber = tempFirstNumber.subtract(tempMulty);
+                    }
+
+                    ret.setValues(tempVal);
+                    return ret; //return new Radix(Math.floor(this.value / otherNum.value), this.base)
+                } // getElement(loc) {
+                //     //return new Radix(Math.floor(this.value / Math.pow(this.base, loc)) % this.base, this.base)
+                //     return this.getElements(loc, loc)
+                // }
+
+        }, {
+            key: "getElements",
+            value: function getElements(start, end) {
+                if (start < 0) {
+                    start = 0;
+                }
+
+                if (end == null) {
+                    end = this.values.length - 1;
+                }
+
+                var tempVal = new Array();
+
+                for (var idx = start; idx <= end; idx++) {
+                    tempVal[idx - start] = this.values[idx];
+                }
+
+                var ret = new LinearEq();
+                ret.setValues(tempVal);
+                ret.shifted = start;
+                return ret;
+            }
+        }, {
+            key: "moveLeft",
+            value: function moveLeft(leftTo) {
+                var tempVal = new Array();
+
+                for (var idx = this.values.length - 1; idx >= 0; idx--) {
+                    tempVal[idx + leftTo] = this.values[idx];
+                }
+
+                for (var _idx3 = 0; _idx3 < leftTo; _idx3++) {
+                    tempVal[_idx3] = 0;
+                }
+
+                var ret = new LinearEq();
+                ret.setValues(tempVal);
+                return ret;
+            }
+        }]);
+
+        return LinearEq;
+    }(Numbers);
+
+    var Radix = /*#__PURE__*/ function(_Numbers2) {
+        _inherits(Radix, _Numbers2);
+
+        function Radix(nu, base) {
+            var _this2;
+
+            _classCallCheck(this, Radix);
+
+            _this2 = _possibleConstructorReturn(this, _getPrototypeOf(Radix).call(this));
+            _this2.value = 0;
+            _this2.base = base || 10;
+
             if (Number.isInteger(nu) == true) {
-                this.value = nu
-                return
+                _this2.value = nu;
+                return _possibleConstructorReturn(_this2);
             } else {
-                for (let idx = 0; idx < nu.length; idx++) {
-                    this.value *= this.base;
-                    let ch = Number(nu.charAt(idx))
+                for (var idx = 0; idx < nu.length; idx++) {
+                    _this2.value *= _this2.base;
+                    var ch = Number(nu.charAt(idx));
+
                     if (isNaN(ch) == false) {
-                        this.value += Number(nu.charAt(idx))
+                        _this2.value += Number(nu.charAt(idx));
                     } else {
-                        this.value += (nu.charCodeAt(idx) - 97 + 10) // 97 is the ASCII code of 'a'
+                        _this2.value += nu.charCodeAt(idx) - 97 + 10; // 97 is the ASCII code of 'a'
                     }
                 }
             }
+
+            return _this2;
         }
-        toString() {
-            if (this.value == 0) {
-                return "0"
-            }
-            let ret = ""
-            let tempValue = this.value
-            while (tempValue != 0) {
-                let iterVal = tempValue % this.base
-                if (iterVal < 10) {
-                    ret += iterVal
-                } else {
-                    ret += String.fromCharCode(iterVal - 10 + 97) // 97 is the ASCII code of 'a'
+
+        _createClass(Radix, [{
+            key: "toString",
+            value: function toString() {
+                if (this.value == 0) {
+                    return "0";
                 }
-                tempValue = Math.floor(tempValue /= this.base)
+
+                var ret = "";
+                var tempValue = this.value;
+
+                while (tempValue != 0) {
+                    var iterVal = tempValue % this.base;
+
+                    if (iterVal < 10) {
+                        ret += iterVal;
+                    } else {
+                        ret += String.fromCharCode(iterVal - 10 + 97); // 97 is the ASCII code of 'a'
+                    }
+
+                    tempValue = Math.floor(tempValue /= this.base);
+                }
+
+                var ret2 = "";
+
+                for (var idx = ret.length - 1; idx >= 0; idx--) {
+                    ret2 += ret.charAt(idx);
+                }
+
+                return ret2;
             }
-            let ret2 = ""
-            for (let idx = ret.length - 1; idx >= 0; idx--) {
-                ret2 += ret.charAt(idx)
+        }, {
+            key: "getLength",
+            value: function getLength() {
+                return this.toString().length;
             }
-            return ret2;
-        }
-
-        getLength() {
-            return this.toString().length
-        }
-
-        add(otherNum) {
-            return new Radix(this.value + otherNum.value, this.base)
-        }
-
-        subtract(otherNum) {
-            return new Radix(this.value - otherNum.value, this.base)
-        }
-
-        multiply(otherNum) {
-            return new Radix(this.value * otherNum.value, this.base)
-        }
-
-        divide(otherNum) {
-            return new Radix(Math.floor(this.value / otherNum.value), this.base)
-        }
-
-        // getElement(loc) {
-        //     //return new Radix(Math.floor(this.value / Math.pow(this.base, loc)) % this.base, this.base)
-        //     return this.getElements(loc, loc)
-        // }
-        getElements(start, end) {
-            if (start < 0) {
-                start = 0
+        }, {
+            key: "add",
+            value: function add(otherNum) {
+                return new Radix(this.value + otherNum.value, this.base);
             }
-            if (end == null) {
-                end = this.getLength()
+        }, {
+            key: "subtract",
+            value: function subtract(otherNum) {
+                return new Radix(this.value - otherNum.value, this.base);
             }
-
-            return new Radix(Math.floor(this.value / Math.pow(this.base, start)) % Math.pow(this.base, end - start + 1), this.base)
-        }
-        moveLeft(leftTo) {
-            return new Radix(this.value * Math.pow(this.base, leftTo), this.base)
-        }
-    }
-
-
-
-    class Multiplier extends Engine {
-        constructor(_first, _second, _printer) {
-            super(_first, _second, _printer)
-            this.printer.setMaxLength(this.firstNumber.toString().length)
-            this.printer.setMaxLength(this.secondNumber.toString().length + 2)
-        }
-        calculate() {
-            this.printer.clear()
-
-            let result = this.firstNumber.multiply(this.secondNumber)
-            this.printer.setMaxLength(result.toString().length + 1)
-            this.printer.printLine(this.firstNumber.toString())
-            this.printer.printLine(this.secondNumber.toString(), 0, "x")
-            this.printer.printBar()
-            for (let idx = 0; idx < this.secondNumber.toString().length; idx++) {
-                let tempResult = this.firstNumber.multiply(this.secondNumber.getElements(idx, idx))
-                this.printer.printLine(tempResult.toString(), idx)
+        }, {
+            key: "multiply",
+            value: function multiply(otherNum) {
+                return new Radix(this.value * otherNum.value, this.base);
             }
-            this.printer.printBar()
-            this.printer.printLine(result.toString())
-        }
-    }
+        }, {
+            key: "divide",
+            value: function divide(otherNum) {
+                    return new Radix(Math.floor(this.value / otherNum.value), this.base);
+                } // getElement(loc) {
+                //     //return new Radix(Math.floor(this.value / Math.pow(this.base, loc)) % this.base, this.base)
+                //     return this.getElements(loc, loc)
+                // }
 
-    class Divider extends Engine {
-        constructor(_first, _second, _printer) {
-            super(_first, _second, _printer)
-            this.printer.setMaxLength(this.firstNumber.toString().length + this.secondNumber.toString().length + 1)
-        }
-        calculate() {
-            this.printer.clear()
-            let result = this.firstNumber.divide(this.secondNumber)
-            this.printer.printLine(result.toString())
-            this.printer.printBar(this.firstNumber.getLength())
-            this.printer.printLine(this.firstNumber.toString(), 0, this.secondNumber.toString() + ")")
+        }, {
+            key: "getElements",
+            value: function getElements(start, end) {
+                if (start < 0) {
+                    start = 0;
+                }
 
-            let barLength = this.firstNumber.getLength()
+                if (end == null) {
+                    end = this.getLength();
+                }
 
-            for (let idx = result.getLength() - 1; idx >= 0; idx--) {
-                let tempResult = this.secondNumber.multiply(result.getElements(idx, idx))
-                this.firstNumber = this.firstNumber.subtract(tempResult.moveLeft(idx))
-                this.printer.printLine(tempResult.toString(), idx)
-                this.printer.printBar(barLength)
-                this.printer.printLine(this.firstNumber.getElements(idx - 1).toString(), idx - 1)
+                return new Radix(Math.floor(this.value / Math.pow(this.base, start)) % Math.pow(this.base, end - start + 1), this.base);
+            }
+        }, {
+            key: "moveLeft",
+            value: function moveLeft(leftTo) {
+                return new Radix(this.value * Math.pow(this.base, leftTo), this.base);
+            }
+        }]);
 
-            }
-        }
-    }
+        return Radix;
+    }(Numbers);
 
+    var Multiplier = /*#__PURE__*/ function(_Engine) {
+        _inherits(Multiplier, _Engine);
 
-    class EQPrinterUsingPre extends EQPrinter {
-        getSpaces(numOfSpaces) {
-            let str = ""
-            for (let idx = 0; idx < numOfSpaces; idx++) {
-                str += " "
-            }
-            return str
-        }
-        clear() {
-            let pallete = document.getElementById("bottom")
-            while (pallete.childNodes.length > 0) {
-                pallete.removeChild(pallete.childNodes[0])
-            }
-        }
-        printLine(contents, leftTo, prefix) {
-            leftTo = leftTo || 0
-            if (leftTo < 0) {
-                leftTo = 0
-            }
-            prefix = prefix || ""
-            let ret = prefix
-            ret += this.getSpaces(this.maxLength - contents.length - leftTo - prefix.length)
-            ret += contents
-            let preObj = document.createElement("pre")
-            preObj.style.fontSize = "3vh"
-            preObj.innerHTML = ret
-            document.getElementById("bottom").appendChild(preObj)
-        }
-    }
+        function Multiplier(_first, _second, _printer) {
+            var _this3;
 
-    class EQPrinterWide extends EQPrinter {
-        setMaxLength(val) {
-            if (2 * val > this.maxLength) {
-                this.maxLength = 2 * val
-            }
-        }
-        getSpaces(numOfSpaces) {
-            let str = ""
-            for (let idx = 0; idx < numOfSpaces; idx++) {
-                str += " "
-            }
-            return str
-        }
-        clear() {
-            let pallete = document.getElementById("bottom")
-            while (pallete.childNodes.length > 0) {
-                pallete.removeChild(pallete.childNodes[0])
-            }
-        }
-        printLine(contents, leftTo, prefix) {
-            leftTo = leftTo || 0
-            prefix = prefix || ""
-            let ret = ""
-            for (let idx = 0; idx < prefix.length; idx++) {
-                ret += " "
-                ret += prefix[idx]
-            }
-            ret += this.getSpaces(this.maxLength - 2 * contents.length - 2 * leftTo - 2 * prefix.length)
-            for (let idx = 0; idx < contents.length; idx++) {
-                ret += " "
-                ret += contents[idx]
-            }
-            //ret+=contents
-            let preObj = document.createElement("pre")
-            preObj.style.fontSize = "3vh"
-            preObj.innerHTML = ret
-            document.getElementById("bottom").appendChild(preObj)
-        }
-        printBar(numOfBars) {
-            let ret = ""
-            numOfBars = numOfBars || (this.maxLength / 2)
-            for (let idx = 0; idx < numOfBars; idx++) {
-                ret += "-"
-            }
-            this.printLine(ret)
+            _classCallCheck(this, Multiplier);
+
+            _this3 = _possibleConstructorReturn(this, _getPrototypeOf(Multiplier).call(this, _first, _second, _printer));
+
+            _this3.printer.setMaxLength(_this3.firstNumber.toString().length);
+
+            _this3.printer.setMaxLength(_this3.secondNumber.toString().length + 2);
+
+            return _this3;
         }
 
-    }
+        _createClass(Multiplier, [{
+            key: "calculate",
+            value: function calculate() {
+                var moveTic = this.firstNumber.moveTic;
+                this.printer.clear();
+                var result = this.firstNumber.multiply(this.secondNumber);
+                this.printer.setMaxLength(result.toString().length + 1);
+                this.printer.printLine(this.firstNumber.toString());
+                this.printer.printLine(this.secondNumber.toString(), 0, "x");
+                this.printer.printBar();
 
+                for (var idx = 0; idx < this.secondNumber.getLength(); idx++) {
+                    var tempResult = this.firstNumber.multiply(this.secondNumber.getElements(idx, idx));
+                    tempResult = tempResult.moveLeft(idx);
+                    tempResult = tempResult.getElements(idx);
+                    this.printer.printLine(tempResult.toString(), idx * moveTic);
+                }
 
+                this.printer.printBar();
+                this.printer.printLine(result.toString());
+            }
+        }]);
 
-    class EQPrinterUsingImg extends EQPrinter {
-        constructor() {
-            super()
-            this.imgSrc = new Array()
-            this.imgSrc['0'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Z%C3%A9ro.svg/1024px-Z%C3%A9ro.svg.png"
-            this.imgSrc['1'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/%E4%B8%80-order.gif/120px-%E4%B8%80-order.gif"
-            this.imgSrc['2'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/%E4%BA%8C-order.gif/120px-%E4%BA%8C-order.gif"
-            this.imgSrc['3'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/%E4%B8%89-order.gif/120px-%E4%B8%89-order.gif"
-            this.imgSrc['4'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/%E5%9B%9B-order.gif/120px-%E5%9B%9B-order.gif"
-            this.imgSrc['5'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/%E4%BA%94-order.gif/120px-%E4%BA%94-order.gif"
-            this.imgSrc['6'] = "https://upload.wikimedia.org/wikipedia/commons/b/b0/%E5%85%AD-order.gif"
-            this.imgSrc['7'] = "https://upload.wikimedia.org/wikipedia/commons/5/59/%E4%B8%83-order.gif"
-            this.imgSrc['8'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/%E5%85%AB-order.gif/100px-%E5%85%AB-order.gif"
-            this.imgSrc['9'] = "https://upload.wikimedia.org/wikipedia/commons/e/ee/%E4%B9%9D-order.gif"
-            this.imgSrc['-'] = "https://image.flaticon.com/icons/png/512/19/19954.png"
-            this.imgSrc['x'] = "https://image.flaticon.com/icons/svg/75/75519.svg"
-            this.imgSrc[')'] = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvlzBaomFR5cq5udNP4Su-vSruGFfky06iYX8wpc8IBI4tIkzt&s"
-            this.imgSrc['a'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/RomanA-01.svg/60px-RomanA-01.svg.png"
-            this.imgSrc['b'] = "https://upload.wikimedia.org/wikipedia/commons/3/30/RomanB-01.png"
-            this.imgSrc['c'] = "https://upload.wikimedia.org/wikipedia/commons/1/19/RomanC-01.png"
-            this.imgSrc['d'] = "https://upload.wikimedia.org/wikipedia/commons/b/ba/RomanD-01.png"
-            this.imgSrc['e'] = "https://upload.wikimedia.org/wikipedia/commons/6/60/RomanE-01.png"
-            this.imgSrc['f'] = "https://upload.wikimedia.org/wikipedia/commons/c/c2/RomanF-01.png"
+        return Multiplier;
+    }(Engine);
 
+    var Divider = /*#__PURE__*/ function(_Engine2) {
+        _inherits(Divider, _Engine2);
+
+        function Divider(_first, _second, _printer) {
+            var _this4;
+
+            _classCallCheck(this, Divider);
+
+            _this4 = _possibleConstructorReturn(this, _getPrototypeOf(Divider).call(this, _first, _second, _printer));
+
+            _this4.printer.setMaxLength(_this4.firstNumber.toString().length + _this4.secondNumber.toString().length + 1);
+
+            return _this4;
         }
 
-        clear() {
-            let pallete = document.getElementById("bottom")
-            while (pallete.childNodes.length > 0) {
-                pallete.removeChild(pallete.childNodes[0])
-            }
-        }
-        printLine(contents, leftTo, prefix) {
-            leftTo = leftTo || 0
-            if (leftTo < 0) {
-                leftTo = 0
-            }
-            prefix = prefix || ""
-            for (let idx = 0; idx < prefix.length; idx++) {
-                let imgNu = document.createElement("img")
-                imgNu.src = this.imgSrc[prefix[idx]]
-                document.getElementById("bottom").appendChild(imgNu)
-            }
-            let ret = prefix
-            for (let idx = 0; idx < this.maxLength - contents.length - leftTo - prefix.length; idx++) {
-                let imgNu = document.createElement("img")
+        _createClass(Divider, [{
+            key: "calculate",
+            value: function calculate() {
+                this.printer.clear();
+                var moveTic = this.firstNumber.moveTic;
+                var result = this.firstNumber.divide(this.secondNumber);
+                this.printer.printLine(result.toString());
+                this.printer.printBar(this.firstNumber.toString().length);
+                this.printer.printLine(this.firstNumber.toString(), 0, this.secondNumber.toString() + ")");
+                var barLength = this.firstNumber.toString().length;
 
-                document.getElementById("bottom").appendChild(imgNu)
-                imgNu.style.visibility = "hidden"
+                for (var idx = result.getLength() - 1; idx >= 0; idx--) {
+                    var tempResult = this.secondNumber.multiply(result.getElements(idx, idx));
+                    tempResult = tempResult.moveLeft(idx).getElements(idx);
+                    this.firstNumber = this.firstNumber.subtract(tempResult.moveLeft(idx));
+                    this.printer.printLine(tempResult.toString(), moveTic * idx);
+                    this.printer.printBar(barLength);
+                    this.printer.printLine(this.firstNumber.getElements(idx - 1).toString(), moveTic * (idx - 1));
+                }
+            }
+        }]);
 
-            }
-            for (let idx = 0; idx < contents.length; idx++) {
-                let imgNu = document.createElement("img")
-                imgNu.src = this.imgSrc[contents[idx]]
-                document.getElementById("bottom").appendChild(imgNu)
-            }
-            document.getElementById("bottom").appendChild(document.createElement("br"))
+        return Divider;
+    }(Engine);
+
+    var EQPrinterUsingPre = /*#__PURE__*/ function(_EQPrinter) {
+        _inherits(EQPrinterUsingPre, _EQPrinter);
+
+        function EQPrinterUsingPre() {
+            _classCallCheck(this, EQPrinterUsingPre);
+
+            return _possibleConstructorReturn(this, _getPrototypeOf(EQPrinterUsingPre).apply(this, arguments));
         }
-    }
+
+        _createClass(EQPrinterUsingPre, [{
+            key: "getSpaces",
+            value: function getSpaces(numOfSpaces) {
+                var str = "";
+
+                for (var idx = 0; idx < numOfSpaces; idx++) {
+                    str += " ";
+                }
+
+                return str;
+            }
+        }, {
+            key: "clear",
+            value: function clear() {
+                var pallete = document.getElementById("bottom");
+
+                while (pallete.childNodes.length > 0) {
+                    pallete.removeChild(pallete.childNodes[0]);
+                }
+            }
+        }, {
+            key: "printLine",
+            value: function printLine(contents, leftTo, prefix) {
+                leftTo = leftTo || 0;
+
+                if (leftTo < 0) {
+                    leftTo = 0;
+                }
+
+                prefix = prefix || "";
+                var ret = prefix;
+                ret += this.getSpaces(this.maxLength - contents.length - leftTo - prefix.length);
+                ret += contents;
+                var preObj = document.createElement("pre");
+                preObj.style.fontSize = "3vh";
+                preObj.innerHTML = ret;
+                document.getElementById("bottom").appendChild(preObj);
+            }
+        }]);
+
+        return EQPrinterUsingPre;
+    }(EQPrinter);
+
+    var EQPrinterWide = /*#__PURE__*/ function(_EQPrinter2) {
+        _inherits(EQPrinterWide, _EQPrinter2);
+
+        function EQPrinterWide() {
+            _classCallCheck(this, EQPrinterWide);
+
+            return _possibleConstructorReturn(this, _getPrototypeOf(EQPrinterWide).apply(this, arguments));
+        }
+
+        _createClass(EQPrinterWide, [{
+            key: "setMaxLength",
+            value: function setMaxLength(val) {
+                if (2 * val > this.maxLength) {
+                    this.maxLength = 2 * val;
+                }
+            }
+        }, {
+            key: "getSpaces",
+            value: function getSpaces(numOfSpaces) {
+                var str = "";
+
+                for (var idx = 0; idx < numOfSpaces; idx++) {
+                    str += " ";
+                }
+
+                return str;
+            }
+        }, {
+            key: "clear",
+            value: function clear() {
+                var pallete = document.getElementById("bottom");
+
+                while (pallete.childNodes.length > 0) {
+                    pallete.removeChild(pallete.childNodes[0]);
+                }
+            }
+        }, {
+            key: "printLine",
+            value: function printLine(contents, leftTo, prefix) {
+                leftTo = leftTo || 0;
+
+                if (leftTo < 0) {
+                    leftTo = 0;
+                }
+
+                prefix = prefix || "";
+                var ret = "";
+
+                for (var idx = 0; idx < prefix.length; idx++) {
+                    ret += " ";
+                    ret += prefix[idx];
+                }
+
+                ret += this.getSpaces(this.maxLength - 2 * contents.length - 2 * leftTo - 2 * prefix.length);
+
+                for (var _idx4 = 0; _idx4 < contents.length; _idx4++) {
+                    ret += " ";
+                    ret += contents[_idx4];
+                } //ret+=contents
+
+
+                var preObj = document.createElement("pre");
+                preObj.style.fontSize = "3vh";
+                preObj.innerHTML = ret;
+                document.getElementById("bottom").appendChild(preObj);
+            }
+        }, {
+            key: "printBar",
+            value: function printBar(numOfBars) {
+                var ret = "";
+                numOfBars = numOfBars || this.maxLength / 2;
+
+                for (var idx = 0; idx < numOfBars; idx++) {
+                    ret += "-";
+                }
+
+                this.printLine(ret);
+            }
+        }]);
+
+        return EQPrinterWide;
+    }(EQPrinter);
+
+    var EQPrinterUsingImg = /*#__PURE__*/ function(_EQPrinter3) {
+        _inherits(EQPrinterUsingImg, _EQPrinter3);
+
+        function EQPrinterUsingImg() {
+            var _this5;
+
+            _classCallCheck(this, EQPrinterUsingImg);
+
+            _this5 = _possibleConstructorReturn(this, _getPrototypeOf(EQPrinterUsingImg).call(this));
+            _this5.imgSrc = new Array();
+            _this5.imgSrc['0'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Z%C3%A9ro.svg/1024px-Z%C3%A9ro.svg.png";
+            _this5.imgSrc['1'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/%E4%B8%80-order.gif/120px-%E4%B8%80-order.gif";
+            _this5.imgSrc['2'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/%E4%BA%8C-order.gif/120px-%E4%BA%8C-order.gif";
+            _this5.imgSrc['3'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/%E4%B8%89-order.gif/120px-%E4%B8%89-order.gif";
+            _this5.imgSrc['4'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/%E5%9B%9B-order.gif/120px-%E5%9B%9B-order.gif";
+            _this5.imgSrc['5'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/%E4%BA%94-order.gif/120px-%E4%BA%94-order.gif";
+            _this5.imgSrc['6'] = "https://upload.wikimedia.org/wikipedia/commons/b/b0/%E5%85%AD-order.gif";
+            _this5.imgSrc['7'] = "https://upload.wikimedia.org/wikipedia/commons/5/59/%E4%B8%83-order.gif";
+            _this5.imgSrc['8'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/%E5%85%AB-order.gif/100px-%E5%85%AB-order.gif";
+            _this5.imgSrc['9'] = "https://upload.wikimedia.org/wikipedia/commons/e/ee/%E4%B9%9D-order.gif";
+            _this5.imgSrc['-'] = "https://image.flaticon.com/icons/png/512/19/19954.png";
+            _this5.imgSrc['x'] = "https://image.flaticon.com/icons/svg/75/75519.svg";
+            _this5.imgSrc[')'] = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvlzBaomFR5cq5udNP4Su-vSruGFfky06iYX8wpc8IBI4tIkzt&s";
+            _this5.imgSrc['a'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/RomanA-01.svg/60px-RomanA-01.svg.png";
+            _this5.imgSrc['b'] = "https://upload.wikimedia.org/wikipedia/commons/3/30/RomanB-01.png";
+            _this5.imgSrc['c'] = "https://upload.wikimedia.org/wikipedia/commons/1/19/RomanC-01.png";
+            _this5.imgSrc['d'] = "https://upload.wikimedia.org/wikipedia/commons/b/ba/RomanD-01.png";
+            _this5.imgSrc['e'] = "https://upload.wikimedia.org/wikipedia/commons/6/60/RomanE-01.png";
+            _this5.imgSrc['f'] = "https://upload.wikimedia.org/wikipedia/commons/c/c2/RomanF-01.png";
+            _this5.imgSrc['t'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/EtruscanT-01.svg/30px-EtruscanT-01.svg.png";
+            _this5.imgSrc['+'] = "https://data.ac-illust.com/data/thumbnails/a0/a047de8897c473ec8fa70baf67cdb122_t.jpeg";
+            _this5.imgSrc['^'] = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Arial_caret.svg/768px-Arial_caret.svg.png";
+            return _this5;
+        }
+
+        _createClass(EQPrinterUsingImg, [{
+            key: "clear",
+            value: function clear() {
+                var pallete = document.getElementById("bottom");
+
+                while (pallete.childNodes.length > 0) {
+                    pallete.removeChild(pallete.childNodes[0]);
+                }
+            }
+        }, {
+            key: "printLine",
+            value: function printLine(contents, leftTo, prefix) {
+                leftTo = leftTo || 0;
+
+                if (leftTo < 0) {
+                    leftTo = 0;
+                }
+
+                prefix = prefix || "";
+
+                for (var idx = 0; idx < prefix.length; idx++) {
+                    var imgNu = document.createElement("img");
+                    imgNu.src = this.imgSrc[prefix[idx]];
+
+                    if (prefix[idx] == " ") {
+                        imgNu.style.visibility = "hidden";
+                    }
+
+                    document.getElementById("bottom").appendChild(imgNu);
+                }
+
+                var ret = prefix;
+
+                for (var _idx5 = 0; _idx5 < this.maxLength - contents.length - leftTo - prefix.length; _idx5++) {
+                    var _imgNu = document.createElement("img");
+
+                    document.getElementById("bottom").appendChild(_imgNu);
+                    _imgNu.style.visibility = "hidden";
+                }
+
+                for (var _idx6 = 0; _idx6 < contents.length; _idx6++) {
+                    var _imgNu2 = document.createElement("img");
+
+                    _imgNu2.src = this.imgSrc[contents[_idx6]];
+
+                    if (contents[_idx6] == " ") {
+                        _imgNu2.style.visibility = "hidden";
+                    }
+
+                    document.getElementById("bottom").appendChild(_imgNu2);
+                }
+
+                document.getElementById("bottom").appendChild(document.createElement("br"));
+            }
+        }]);
+
+        return EQPrinterUsingImg;
+    }(EQPrinter);
 </script>
